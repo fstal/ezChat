@@ -1,17 +1,38 @@
-const e = require("express");
-
 const socket = io();
 
 socket.on("message", (msg) => console.log(msg));
 
+// Handles for elements
 const nameInput = document.getElementById("nameInput");
 const msgInput = document.getElementById("msgInput");
 const sendBtn = document.getElementById("sendBtn");
 const msgContainer = document.querySelector(".message-container");
+const room1Btn = document.getElementById("room1");
+const room2Btn = document.getElementById("room2");
 
+// Add event listeners
 sendBtn.addEventListener("click", () =>
   socket.emit("chatMessage", msgInput.value)
 );
+
+room1Btn.addEventListener("click", () => {
+  // "subscribe to room1 and dc from others"
+  const username = nameInput.value;
+  if (username) {
+    socket.emit("joinRoom", { username, room: "room1" });
+  } else {
+    console.log("need username");
+  }
+});
+
+room2Btn.addEventListener("click", () => {
+  // "subscribe to room2 and dc from others"
+  if (username) {
+    socket.emit("joinRoom", { username, room: "room2" });
+  } else {
+    console.log("need username");
+  }
+});
 
 // Message from server
 socket.on("message", (msg) => {
@@ -26,17 +47,14 @@ socket.on("message", (msg) => {
 });
 
 // Output msg to DOM
-const outputMsg = (msg) => {
+const outputMsg = ({ username, text, time }) => {
   const div = document.createElement("div");
   div.classList.add("message");
   div.innerHTML = `            
     <p class="meta">
-        <span class="text-name">${nameInput.value || "ezChat Server"}</span>
-        <span class="time">${getTime()}</span>
+        <span class="text-name">${username}</span>
+        <span class="time">${time}</span>
     </p>
-    <p class="text">${msg}</p>`;
+    <p class="text">${text}</p>`;
   msgContainer.appendChild(div);
 };
-
-// Get and format current time
-const getTime = () => new Date().toLocaleString();

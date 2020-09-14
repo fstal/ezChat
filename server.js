@@ -2,6 +2,7 @@ const path = require("path");
 const express = require("express");
 const socketio = require("socket.io");
 const http = require("http"); //express acutally uses http under the hood, but we need to access it directly anyway for socket.io
+const formatMessage = require("./utils/messages");
 
 const PORT = process.env.PORT || 4000;
 
@@ -17,19 +18,26 @@ app.use(express.static(path.join(__dirname, "public")));
 io.on("connection", (socket) => {
   //console.log("new websocket connection");
 
-  // Welcome current user
-  socket.emit("message", "Welcome to ezChat");
+  const botName = "ezChat Server";
 
-  // Broadcast user connecting
-  socket.broadcast.emit("message", "A user has connected"); //broadcast emits to everyone except the one sending it
+  // Welcome current user
+  socket.emit("message", formatMessage(botName, "Welcome to ezChat!"));
+
+  // Broadcast user connects
+  socket.broadcast.emit(
+    "message",
+    formatMessage(botName, "A user has connected")
+  ); //broadcast emits to everyone except the one sending it
 
   // Broadcast user disconnecting
   socket.on("disconnect", () => {
-    io.emit("message", "A user has left the chat");
+    io.emit("message", formatMessage(botName, "A user has disconnected"));
   });
 
   // Listen to chatmMessage
-  socket.on("chatMessage", (msg) => io.emit("message", msg));
+  socket.on("chatMessage", (msg) =>
+    io.emit("message", formatMessage("username", msg))
+  );
 });
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
