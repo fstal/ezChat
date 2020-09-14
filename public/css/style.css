@@ -1,3 +1,11 @@
+:root {
+  --dark-color-primary: #5352ac;
+  --dark-color-secondary: #7371d3;
+  --light-color: #eee;
+  --success-color: #5cb85c;
+  --error-color: #d9534f;
+}
+
 *,
 *::before,
 *::after {
@@ -19,6 +27,11 @@ p {
   margin: 0;
 }
 
+ul {
+  list-style: none;
+  margin: 0;
+}
+
 .chat-container {
   background-color: royalblue;
   width: 80%;
@@ -26,7 +39,7 @@ p {
 }
 
 .chat-header {
-  background-color: #5352ac;
+  background-color: var(--dark-color-primary);
   color: #fff;
   justify-content: space-between;
   display: flex;
@@ -44,7 +57,7 @@ p {
 
 .chat-main {
   display: flex;
-  background-color: #7371d3;
+  background-color: var(--dark-color-secondary);
 }
 
 .chat-sidebar {
@@ -63,19 +76,35 @@ p {
   background-color: #eee;
   width: 78%;
   padding: 10px;
+  overflow-y: scroll;
+  height: 60vh;
 }
 
 .chat-footer {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  background-color: #5352ac;
+  background-color: var(--dark-color-primary);
   height: 40px;
 }
 
 .input {
   height: 30px;
   width: 200px;
+}
+
+.text-name {
+  font-weight: 700;
+  color: royalblue;
+}
+
+.time {
+  color: grey;
+  font-size: 12px;
+}
+
+.message:not(:last-child) {
+  border-bottom: 1px solid gray;
 }
 
 .input-name {

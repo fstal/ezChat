@@ -32,15 +32,46 @@
           </div>
         </div>
         <div class="message-container">
-          <div class="message">Filip - Hej hallå, filip här</div>
-          <div class="message">Anton - Tjena filip!</div>
-          <div class="message">Jocke - Morsning korsning alla!</div>
+          <div class="message">
+            <p class="meta">
+              <span class="text-name">Filip</span>
+              <span class="time">9:12</span>
+            </p>
+            <p class="text">Hej hallå, filip här</p>
+          </div>
+          <div class="message">
+            <p class="meta">
+              <span class="text-name">Anton</span>
+              <span class="time">9:13</span>
+            </p>
+            <p class="text">Tjena filip!</p>
+          </div>
+          <div class="message">
+            <p class="meta">
+              <span class="text-name">Jocke</span>
+              <span class="time">9:15</span>
+            </p>
+            <p class="text">Morsning korsning alla!</p>
+          </div>
         </div>
       </div>
       <div class="chat-footer">
-        <input class="input input-name" type="text" />
-        <input class="input input-msg" type="text" />
+        <input
+          id="nameInput"
+          class="input input-name"
+          placeholder="Your name"
+          type="text"
+        />
+        <input
+          id="msgInput"
+          class="input input-msg"
+          placeholder="Enter message..."
+          type="text"
+        />
+        <button id="sendBtn" class="btn btn-send">Send</button>
       </div>
     </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./js/main.js"></script>
   </body>
 </html>
