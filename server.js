@@ -3,9 +3,15 @@ const express = require("express");
 const socketio = require("socket.io");
 const http = require("http"); //express acutally uses http under the hood, but we need to access it directly anyway for socket.io
 const formatMessage = require("./utils/messages");
-const { userJoin, getCurrentUser } = require("./utils/users");
+const {
+  userJoin,
+  getCurrentUser,
+  userLeave,
+  getRoomUsers,
+} = require("./utils/users");
 
 const PORT = process.env.PORT || 4000;
+const botName = "ezChat Server";
 
 // App & server setup
 const app = express();
@@ -17,20 +23,33 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Run when client connects
 io.on("connection", (socket) => {
-  const botName = "ezChat Server";
+  const allRooms = ["room1", "room2"];
 
   // On joinRoom
   socket.on("joinRoom", ({ username, room }) => {
-    const user = userJoin(socket.id, username, room);
-    console.log(socket.id, username, room);
-    socket.join(user.room);
+    // Leave all rooms if user is in any room
+    const user = userLeave(socket.id); // User list
+    console.log("userLeave called");
+    if (user) {
+      console.log("left all rooms");
+      allRooms.forEach((r) => socket.leave(r)); // Actual socket room leaving
+      announceLeavingUser(user);
+    }
+
+    // Add to user list and join
+    console.log(`called userJoin with ${!!user}`);
+    userJoin({ id: socket.id, username, room });
+    socket.join(room);
 
     // Welcome current user
-    socket.emit("message", formatMessage(botName, "Welcome to ezChat!"));
+    socket.emit(
+      "message",
+      formatMessage(botName, `Welcome to ezChat (${room})!`)
+    );
 
     // Broadcast user connects
     socket.broadcast
-      .to(user.room)
+      .to(room)
       .emit(
         "message",
         formatMessage(botName, `${username} has joined the room!`)
@@ -44,9 +63,20 @@ io.on("connection", (socket) => {
   });
 
   // Broadcast user disconnecting
+  // prettier-ignore
   socket.on("disconnect", () => {
-    io.emit("message", formatMessage(botName, "A user has disconnected"));
+    const user = userLeave(socket.id); //if user in user list, remove it
+    if (user) {announceLeavingUser(user)}
   });
 });
+
+// Announce leaving user to chat
+// prettier-ignore
+const announceLeavingUser = (user) => io
+    .to(user.room)
+    .emit(
+      "message",
+      formatMessage(botName, `${user.username} has disconnected from the chat`)
+    );
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
