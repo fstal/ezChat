@@ -10,6 +10,8 @@ const leaveRoomBtn = document.getElementById("btnLeaveRoom");
 const msgContainer = document.querySelector(".message-container");
 const room1Btn = document.getElementById("room1");
 const room2Btn = document.getElementById("room2");
+const usersList = document.getElementById("userList");
+const roomName = document.getElementById("room-name");
 
 //  Add event listeners
 //
@@ -45,6 +47,12 @@ room2Btn.addEventListener("click", () => {
   }
 });
 
+// Get room and users
+socket.on("roomUsers", ({ room, users }) => {
+  outputRoomName(room);
+  outputUsers(users);
+});
+
 // Listen on message from server
 socket.on("message", (msg) => {
   outputMsg(msg);
@@ -64,4 +72,30 @@ const outputMsg = ({ username, text, time }) => {
     </p>
     <p class="text">${text}</p>`;
   msgContainer.appendChild(div);
+};
+
+// Add room name to DOM
+const outputRoomName = (room) => (roomName.innerHTML = room);
+
+// Add User
+const outputUsers = (users) => {
+  usersList.innerHTML = `${users
+    .map((user) => `<li class="user-list-item"> ${user.username} </li>`)
+    .join("")}`;
+
+  //   userList.innerHTML = "";
+  //   const li = document.createElement('li');
+  //   li.classList.add('user-list-item');
+
+  //   users.forEach(user => userList.appendChild(li))
+
+  //   li.innerHTML = user;
+
+  //   users.forEach((user) =>
+  //     userList.appendChild(
+  //       (document
+  //         .createElement("li")
+  //         .classList.add("user-list-item").innerHTML = user)
+  //     )
+  //   );
 };

@@ -29,15 +29,12 @@ io.on("connection", (socket) => {
   socket.on("joinRoom", ({ username, room }) => {
     // Leave all rooms if user is in any room
     const user = userLeave(socket.id); // User list
-    console.log("userLeave called");
     if (user) {
-      console.log("left all rooms");
       allRooms.forEach((r) => socket.leave(r)); // Actual socket room leaving
       announceLeavingUser(user);
     }
 
     // Add to user list and join
-    console.log(`called userJoin with ${!!user}`);
     userJoin({ id: socket.id, username, room });
     socket.join(room);
 
@@ -54,6 +51,13 @@ io.on("connection", (socket) => {
         "message",
         formatMessage(botName, `${username} has joined the room!`)
       ); //broadcast emits to everyone except the one sending it
+
+    // Send user and room info
+    //io.to(room).emit("roomUsers", {
+    io.emit("roomUsers", {
+      room,
+      users: getRoomUsers(room),
+    });
   });
 
   // Listen to chatmMessage
@@ -63,16 +67,18 @@ io.on("connection", (socket) => {
   });
 
   // Broadcast user disconnecting
-  // prettier-ignore
   socket.on("disconnect", () => {
     const user = userLeave(socket.id); //if user in user list, remove it
-    if (user) {announceLeavingUser(user)}
+    if (user) {
+      announceLeavingUser(user);
+      io.to(room).emit("roomUsers", { room, users: getRoomUsers(room) });
+    }
   });
 });
 
 // Announce leaving user to chat
-// prettier-ignore
-const announceLeavingUser = (user) => io
+const announceLeavingUser = (user) =>
+  io
     .to(user.room)
     .emit(
       "message",
