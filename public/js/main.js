@@ -19,6 +19,7 @@ room1Btn.addEventListener("click", () => {
   // "subscribe to room1 and dc from others"
   const username = nameInput.value;
   if (username) {
+    console.log(username);
     socket.emit("joinRoom", { username, room: "room1" });
   } else {
     console.log("need username");
@@ -27,7 +28,9 @@ room1Btn.addEventListener("click", () => {
 
 room2Btn.addEventListener("click", () => {
   // "subscribe to room2 and dc from others"
+  const username = nameInput.value;
   if (username) {
+    console.log(username);
     socket.emit("joinRoom", { username, room: "room2" });
   } else {
     console.log("need username");
